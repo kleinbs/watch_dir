@@ -1,0 +1,15 @@
+{
+  "name": "watch_dir",
+  "version": "1.0.0",
+  "description": "Watch directories and convert all XML in folders to JSON and output them in user specified directory",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "xml",
+    "json"
+  ],
+  "author": "Brian Klein",
+  "license": "ISC"
+}
