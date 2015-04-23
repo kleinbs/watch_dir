@@ -11,7 +11,8 @@
     "json"
   ],
   "dependencies": {
-    "watch": "^0.16.0"
+    "watch": "^0.16.0",
+    "xml2js": "^0.4.8"
   },
   "author": "Brian Klein",
   "license": "ISC"
