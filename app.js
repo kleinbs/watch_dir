@@ -1,34 +1,19 @@
 //test
 var watch = require('watch');
-var parseString = require('xml2js').parseString;
+var xml2js = require('xml2js');
 var fs = require('fs');
 var through = require('through2');
+var path = require('path');
 
-var retrieveXml = through(write, end);
+
 var read = process.argv[2];
 var write = process.argv[3];
 
 watch.createMonitor(read, function (monitor) {
-	monitor.files['/home/mikeal/.zshrc'] // Stat object for my zshrc.
-	monitor.on("created", function (f, stat) {
-		if(stat.isFile()){
 
-			fs.readFile(f, function (err, data){
-				parseString(data.toString(), function(err, result){
-					if(err) return;
-					console.log(result);
-					fs.writeFile(f + ".json", result, function(err){
-						if (err) return console.log(err);
-						else return console.log("success");
-					})
-				})
-			})
-			//var xml = fs.createReadStream(f)//.pipe(retrieveXml);
-		}
-			//console.log(xml.buffer.toString());
-			//parseString(xml, function(err, result){
-			//	console.log(result);
-			//})
+	monitor.on("created", function (f, stat) {
+		if(stat.isFile())
+			convertToJson(f);
 		console.log("created " + f)// Handle new files
 	})
 	monitor.on("changed", function (f, curr, prev) {
@@ -40,31 +25,22 @@ watch.createMonitor(read, function (monitor) {
 	//monitor.stop(); // Stop watching
 })
 
-function write(buffer, encoding, next){
+function convertToJson(f){
 
-	this.push(parseString(buffer.toString(), function(err, result){
-		if(err) return;
-		console.log(result);
-		fs.writeFile(f + ".xml", result, function(err){
-			if (err) return console.log(err);
-			else return console.log("success");
+	console.log(f);
+	var pathInfo = path.parse(f)
+	var parser = new xml2js.Parser()
+
+	if(pathInfo.ext !== '.xml') return;
+	
+	var toXML = fs.readFile(f, function(err, data){
+		parser.parseString(data, function(err, result){
+			fs.writeFile(pathInfo.dir + "/" + pathInfo.name + ".json", result, function(err){
+				if(err){
+					console.log("Couldn't write JSON: " + e)
+					return
+				}
+			})
 		})
-	}))
-	next();
-}
-
-function end(done){
-	done();
-}
-
-function readFile(err, data){
-	console.log(data);
-	if(err) {
-		return;
-	}
-	return data;
-}
-
-function xml2json(err, result){
-	console.log(result);
+	})
 }
