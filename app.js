@@ -36,31 +36,27 @@ function convertToJson(f){
 
 	if(pathInfo.ext !== '.xml') return console.log("Not XML, no changes");
 	
-	fs.createReadStream(f).pipe(through(write, end)).pipe(fs.createWriteStream(pathInfo.dir + "/" + pathInfo.name + ".json"));
-		//parser.parseString(data, function(err, result){
-		//	console.log(result);
-		//	var jsonString = result;
-		//	console.log(jsonString);
-		//	//fs.writeFile(pathInfo.dir + "/" + pathInfo.name + ".json", jsonString, function(err, data2){
-			//	console.log("inside " + jsonString);
-			//	if(err){
-			//		console.log("Couldn't write JSON: " + err)
-			//		return
-			//	}
-			//})
+	fs.createReadStream(f).pipe(through(write, end)).pipe(fs.createWriteStream(pathInfo.dir + "/" + pathInfo.name + ".json").on('error', function(err){ console.log(err)}));
 
 	function write(buff, enc, next){
 
 		console.log("Incoming XML \n" + buff.toString());
-		this.push(parser.parseString(buff.toString(), function(err, result){
+		parser.parseString(buff.toString(), function(err, result){
 			if(err) return console.log("there was an error");
 
-			return result;
-		}))
+			jsonString = result;
+			console.log(result);
+			//this.push(result);
+			
+			next();
+		})
+
+		
 	}
 
 	function end(done){
-		//this.push(jsonString);
+		console.log("outgoing json " + JSON.stringify(jsonString));
+		this.push(JSON.stringify(jsonString));
 		done();
 	}
 }
