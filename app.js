@@ -32,33 +32,36 @@ function convertToJson(f){
 	console.log(f);
 	var pathInfo = path.parse(f)
 	var parser = new xml2js.Parser()
+	var xmlFile = '';
 	var jsonString;
 
 	if(pathInfo.ext !== '.xml') return console.log("Not XML, no changes");
 	
-	fs.createReadStream(f).pipe(through(write, end)).pipe(fs.createWriteStream(pathInfo.dir + "/" + pathInfo.name + ".json").on('error', function(err){ console.log(err)}));
+	fs.createReadStream(f).pipe(through(read, done)).pipe(through(write, end)).pipe(fs.createWriteStream(pathInfo.dir + "/" + pathInfo.name + ".json").on('error', function(err){ console.log(err)}));
+
+	function read(buff, enc, next){
+		xmlFile += buff.toString();
+		next();
+	}
+
+	function done(done){
+		this.push(xmlFile);
+		done();
+	}
 
 	function write(buff, enc, next){
 
-		console.log("Incoming XML \n" + buff.toString());
-		parser.parseString(buff.toString(), function(err, result){
-			if(err) return console.log("there was an error");
-
+		parser.parseString(xmlFile, function(err, result){
+			if(err) return console.log("there was an error " + err);
 			jsonString = result;
-			console.log(result);
-			//this.push(result);
-			
 			next();
 		})
-
-		
 	}
 
 	function end(done){
-		console.log("outgoing json " + JSON.stringify(jsonString));
 		this.push(JSON.stringify(jsonString));
+		console.log("writing xml")
 		done();
 	}
 }
-
 
