@@ -44,8 +44,8 @@ function convertToJson(f){
 	console.log(pathInfo.ext)
 	if(pathInfo.ext !== '.xml') return console.log("Not XML, no changes");
 	
-	mkdirp(outFileDir, function (err) {
-		if (err) return console.log("Couldn't create directory");
+	//mkdirp(outFileDir, function (err) {
+	//	if (err) return console.log("Couldn't create directory");
 		console.log('hi')
 		//console.log(f)
 		fs.createReadStream(f).pipe(through(read, done)).pipe(through(write, end))
@@ -53,7 +53,7 @@ function convertToJson(f){
 			.on('error', function(err){ console.log(err)}));
 			done();
 		console.log('done');
-	})	
+	//})	
 
 	function read(buff, enc, next){
 		console.log("talk to me " + buff.toString());
