@@ -14,7 +14,7 @@ var writeRootDir = process.argv[3];
 
 watch.createMonitor(readRootDir, function (monitor) {
 
-	convertExistingToJson(readRootDir)
+	initalizeFiles(readRootDir);
 
 	monitor.on("created", function (f, stat) {
 		if(stat.isFile())
@@ -25,7 +25,7 @@ watch.createMonitor(readRootDir, function (monitor) {
 			convertToJson(f);
 	})
 	monitor.on("removed", function (f, stat) {
-	  // Handle removed files
+	  		removeFile(f);
 	})
 	//monitor.stop(); // Stop watching
 })
@@ -41,7 +41,7 @@ function convertToJson(f){
 
 	if(pathInfo.ext !== '.xml') return console.log("Not XML, no changes");
 
-	console.log("attempting to convert " + pathInfo.base);
+	console.log("Converting " + pathInfo.base);
 
 	mkdirp(outFileDir, function (err) {
 		fs.createReadStream(f).pipe(through(read, done))
@@ -61,7 +61,6 @@ function convertToJson(f){
 	}
 
 	function write(buff, enc, next){
-
 		parser.parseString(xmlFile, function(err, result){
 			if(err) return console.log("there was an error " + err);
 			jsonString = result;
@@ -70,20 +69,38 @@ function convertToJson(f){
 	}
 
 	function end(done){
+		console.log("File converted: " + pathInfo.base);
 		this.push(JSON.stringify(jsonString));
 		done();
 	}
 }
 
-function convertExistingToJson(rootDir){
+function removeFile(f){
+	console.log(f.lastIndexOf('.xml') + 4)
+	console.log(f.length);
+	if(f.lastIndexOf('.xml') + 4 !== f.length) return console.log("unable to delete file: " + f)
 
+	var outFile = (f).replace(readRootDir, writeRootDir).replace(f.substring(f.lastIndexOf('.xml'), f.lastIndexOf('.xml') + 4), '.json')
+	console.log(outFile)
+	//var outFileDir = (pathInfo.dir + '/').replace(readRootDir, writeRootDir)
+	console.log('attempting to remove ' + outFile) 
+	fs.unlink(outFile, function(err){
+		if(err) return console.log("unable to remove file: " + err)
+	})
+}
+
+function initalizeFiles(rootDir){
+	//console.log("initalizing Files")
+	console.log(rootDir);
 	fs.readdir(rootDir, function(err, files){
 		for (var i in files){
 			var stats = fs.lstatSync(rootDir + '/' + files[i]);
-			if(stats.isFile())
+			if(stats.isFile()){
 				convertToJson(rootDir + "/" + files[i]);
-			else if(stats.isDirectory())
-				convertExistingToJson(rootDir + "/" + files[i])
+			}
+			else if(stats.isDirectory()){
+				initalizeFiles(rootDir + "/" + files[i])
+			}
 		}
 	})
 }
