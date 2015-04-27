@@ -6,13 +6,22 @@ var through = require('through2');
 var path = require('path');
 var mkdirp = require('mkdirp');
 
-//var buffer = through(start, end);
+var readRootDir;
+var writeRootDir;
 
+watch.createMonitor(process.argv[2], function (monitor) {
 
-var readRootDir = process.argv[2];
-var writeRootDir = process.argv[3];
+	if(process.argv.length < 2)
+		return console.log("need at least three arguements")
+	if(process.argv.length === 3){
+		readRootDir = process.argv[2];
+		writeRootDir = process.argv[2];
+	} else if(process.argv.length === 4){
+		readRootDir = process.argv[2];
+		writeRootDir = process.argv[3];
+	}
 
-watch.createMonitor(readRootDir, function (monitor) {
+	console.log(process.argv.length)
 
 	initalizeFiles(readRootDir);
 
@@ -27,7 +36,6 @@ watch.createMonitor(readRootDir, function (monitor) {
 	monitor.on("removed", function (f, stat) {
 	  		removeFile(f);
 	})
-	//monitor.stop(); // Stop watching
 })
 
 function convertToJson(f){
@@ -82,7 +90,6 @@ function removeFile(f){
 
 	var outFile = (f).replace(readRootDir, writeRootDir).replace(f.substring(f.lastIndexOf('.xml'), f.lastIndexOf('.xml') + 4), '.json')
 	console.log(outFile)
-	//var outFileDir = (pathInfo.dir + '/').replace(readRootDir, writeRootDir)
 	console.log('attempting to remove ' + outFile) 
 	fs.unlink(outFile, function(err){
 		if(err) return console.log("unable to remove file: " + err)
