@@ -1,6 +1,6 @@
 {
   "name": "watch_dir",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Watch directories and convert all XML in folders to JSON and output them in user specified directory",
   "main": "app.js",
   "scripts": {
@@ -11,10 +11,11 @@
     "json"
   ],
   "dependencies": {
-    "mkdirp": "^0.5.0",
-    "through2": "^0.6.5",
-    "watch": "^0.16.0",
-    "xml2js": "^0.4.8"
+    "mkdirp": "^1.0.4",
+    "npm-check-updates": "^11.4.1",
+    "through2": "^4.0.2",
+    "watch": "^1.0.2",
+    "xml2js": "^0.4.23"
   },
   "author": "Brian Klein",
   "license": "ISC"

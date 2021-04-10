@@ -12,10 +12,3 @@ node app.js foo/bar/ bar/foo/
 - In this example, the xml files will be picked up in the directory foo/bar/, converted to json, and dropped off in the directory bar/foo/
 - If a file is created, changed, or deleted in the child directory foo/bar/foo/, it will be updated or deleted in the directory bar/foo/foo/
 
-# Dependencies
-The following npm dependencies are required to run this program. They should be included in the project
--  mkdirp  : "^0.5.0"
--  through2: "^0.6.5"
--  watch   : "^0.16.0"
--  xml2js  : "^0.4.8"
-
